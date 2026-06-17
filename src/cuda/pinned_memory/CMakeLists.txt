@@ -1,0 +1,1 @@
+cuda_example_add_executable(pinned_memory pinned_memory.cu)

@@ -1,0 +1,2 @@
+cuda_example_add_executable(thread_indexing thread_indexing.cu)
+
