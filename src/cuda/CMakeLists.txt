@@ -19,7 +19,7 @@ function(cuda_example_add_executable NAME)
       $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-fopenmp>)
   endif()
   set_property(TARGET ${NAME} PROPERTY FOLDER "cuda-samples")
-  set_property(TARGET ${NAME} PROPERTY CUDA_ARCHITECTURES "80;89;120")
+  set_property(TARGET ${NAME} PROPERTY CUDA_ARCHITECTURES "80;86;89")
   add_dependencies(cuda_examples ${NAME})
 endfunction()
 

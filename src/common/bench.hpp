@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace hetero {
+namespace moonshot {
 
 inline int ceil_div(int value, int divisor) {
   return (value + divisor - 1) / divisor;
@@ -27,7 +27,7 @@ inline constexpr int kDefaultBenchmarkRuns = 20;
 //   float elapsed_ms() const;
 //
 // Each backend provides a concrete Timer (cudaEvent / hipEvent / MTLCommandBuffer
-// GPU timestamps) and exposes e.g. `using LatencyProfiler = hetero::Profiler<CudaEventTimer>;`.
+// GPU timestamps) and exposes e.g. `using LatencyProfiler = moonshot::Profiler<CudaEventTimer>;`.
 template <typename Timer>
 class Profiler {
  public:
@@ -84,4 +84,4 @@ class Profiler {
   Timer timer_;
 };
 
-}  // namespace hetero
+}  // namespace moonshot
