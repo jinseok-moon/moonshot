@@ -1,0 +1,31 @@
+# moonshot
+
+> A from-scratch LLM inference engine for Ampere (RTX 3090, sm_86), built kernel-up. The
+> engine runs on pure-torch fallbacks with zero custom kernels; each CUDA kernel you add
+> replaces one fallback and is scored as % of it. Built in the open as an AI-agentic
+> project: agents drive plumbing/harnesses/docs, humans own the why-fast performance
+> reasoning.
+
+This file is the machine-readable index of the knowledge base. Each doc carries YAML
+frontmatter (title, status, audience, updated, tags, related) and cross-links with relative
+paths.
+
+## Start here
+- [overview](overview.md): what moonshot is, the two-track goal, the north star.
+- [roadmap](roadmap.md): engineering phases (GEMM ladder → primitives → engine spine →
+  FlashAttention → quantization → Triton/PyTorch → specialization) and milestones.
+
+## Design
+- [architecture](architecture.md): the extension seam — Python orchestration + `moonshot.ops`
+  dispatch + CUDA C++ custom ops, engine-runs-on-fallbacks-first, kernels-as-plugins.
+- [hardware-and-measurement](hardware-and-measurement.md): RTX 3090 / sm_86 constraints, the
+  no-`ncu` profiling methodology, and the % -of-reference reporting discipline.
+
+## Practice
+- [ai-collaboration](ai-collaboration.md): the delegate-vs-own doctrine — what agents drive,
+  what a human must own and defend at a whiteboard, and the definition of done.
+
+## Logs
+- [decisions/](decisions/): ADR-style decision log. Start at
+  [0001-clean-agentic-restart](decisions/0001-clean-agentic-restart.md).
+- [kernels/](kernels/): per-kernel knowledge notes and baselines.

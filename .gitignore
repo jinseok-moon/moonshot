@@ -1,0 +1,26 @@
+# --- private career strategy — never tracked, never pushed ---
+private/
+
+# build
+build/
+dist/
+*.egg-info/
+compile_commands.json
+CMakeUserPresets.json
+*.so
+*.o
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# bench artifacts
+*_bench.csv
+
+# editor / os
+.vscode/
+.DS_Store
+.ninja_deps
+.ninja_log

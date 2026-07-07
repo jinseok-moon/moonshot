@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "moonshot"
+version = "0.0.0"
+description = "A from-scratch LLM inference engine for Ampere, built kernel-up."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "torch>=2.4",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "numpy"]
+
+[tool.setuptools.packages.find]
+include = ["moonshot*"]
+
+# The CUDA custom ops under csrc/ are compiled via torch's cpp_extension on the target box
+# (sm_86). Until a kernel lands, `moonshot.ops` runs entirely on pure-torch fallbacks, so the
+# package imports and the engine runs without any compiled extension. See docs/architecture.md.
