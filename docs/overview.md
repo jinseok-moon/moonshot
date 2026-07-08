@@ -11,10 +11,12 @@ related: [roadmap.md, architecture.md, ai-collaboration.md]
 
 ## What moonshot is
 
-A from-scratch LLM inference engine for the RTX 3090 (Ampere, `sm_86`), built kernel-up. It
-is deliberately structured so the **engine runs before any custom kernel exists** — a real
-Llama forward pass on pure-PyTorch fallback ops — and each CUDA kernel you write replaces
-one fallback, scored as a percentage of it. The kernels (bf16 tensor-core GEMM,
+A from-scratch LLM inference engine, built kernel-up and architecture-portable (developed
+primarily on an RTX 3090 / Ampere `sm_86`). It is deliberately structured so the **engine
+runs before any custom kernel exists** — a real Llama forward pass on pure-PyTorch fallback
+ops, on any GPU torch supports — and each CUDA kernel you write replaces one fallback, scored
+as a percentage of it. Kernels are capability-gated, so one built for Ampere falls back
+gracefully on older cards rather than breaking. The kernels (bf16 tensor-core GEMM,
 FlashAttention, weight-only quantized matmul) are the substance; the engine is the harness
 that gives every kernel a real workload to live in.
 

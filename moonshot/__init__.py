@@ -6,6 +6,6 @@ under ``csrc/ops/`` replaces one fallback through the seam in :mod:`moonshot.ops
 
 __version__ = "0.0.0"
 
-from . import ops  # noqa: F401
+from . import device, ops  # noqa: F401
 
-__all__ = ["ops", "__version__"]
+__all__ = ["device", "ops", "__version__"]

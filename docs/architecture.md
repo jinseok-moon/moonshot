@@ -24,10 +24,16 @@ moonshot.ops                rmsnorm · linear · attention · dequant_linear · 
 ## The rule
 
 `moonshot/ops.py` exposes one function per engine operation. Each function asks the registry
-whether a compiled CUDA custom op named `<name>` is present:
+whether a compiled CUDA custom op named `<name>` is present **and** the current device meets
+the compute capability that kernel needs ([`device.py`](../moonshot/device.py)):
 
-- **present** → call `torch.ops.moonshot.<name>` (the hand-written kernel).
-- **absent** → run the pure-torch fallback (a correct, unoptimized reference).
+- **present and supported** → call `torch.ops.moonshot.<name>` (the hand-written kernel).
+- **absent, or device below the kernel's capability** → run the pure-torch fallback (a
+  correct, unoptimized reference).
+
+The capability gate is what makes the engine portable across GPUs: a kernel written for
+Ampere (`cc ≥ 8.0`, bf16 tensor cores + `cp.async`) simply falls back on a Turing card
+instead of breaking. See [hardware-and-measurement](hardware-and-measurement.md#portability-model).
 
 Consequences:
 
@@ -56,7 +62,9 @@ and attention.
 
 1. Copy `csrc/ops/template/` → `csrc/ops/<name>/`. Implement the kernel; register it with
    `TORCH_LIBRARY(moonshot, m) { m.def(...); m.impl(...); }` (see the template README).
-2. Ensure `moonshot/ops.py` has a `<name>` dispatcher (custom-op-preferred, torch fallback).
+2. Ensure `moonshot/ops.py` has a `<name>` dispatcher (custom-op-preferred, torch fallback),
+   passing the `min_capability` the kernel needs (e.g. `(8, 0)` for bf16 tensor cores). Guard
+   arch-specific instructions in the kernel with `#if __CUDA_ARCH__ >= 800`.
 3. Rebuild (`pip install -e .` on the 3090), bench against the fallback, and record the
    number + why-fast note in `docs/kernels/<name>.md`.
 

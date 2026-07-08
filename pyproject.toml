@@ -19,6 +19,10 @@ dev = ["pytest", "numpy"]
 [tool.setuptools.packages.find]
 include = ["moonshot*"]
 
-# The CUDA custom ops under csrc/ are compiled via torch's cpp_extension on the target box
-# (sm_86). Until a kernel lands, `moonshot.ops` runs entirely on pure-torch fallbacks, so the
-# package imports and the engine runs without any compiled extension. See docs/architecture.md.
+# The CUDA custom ops under csrc/ are compiled via torch's cpp_extension. Architecture is not
+# hard-coded: torch auto-detects the current GPU's compute capability, or you override with
+#   TORCH_CUDA_ARCH_LIST="7.5 8.0 8.6 8.9 9.0"   # Turing … Hopper, a portable fatbin
+# Kernels self-guard arch-specific features (__CUDA_ARCH__) and dispatch falls back at runtime
+# on unsupported devices (moonshot/device.py). Until a kernel lands, `moonshot.ops` runs
+# entirely on pure-torch fallbacks, so the package imports and the engine runs on any torch
+# backend (CUDA incl. ROCm, or CPU) without a compiled extension. See docs/architecture.md.

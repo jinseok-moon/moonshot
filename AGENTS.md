@@ -7,9 +7,12 @@ own here*.
 
 ## What this project is
 
-A from-scratch LLM inference engine for the RTX 3090 (`sm_86`), built kernel-up. Python
-orchestrates; CUDA C++ custom ops do the work. The design rule: **the engine runs on torch
-fallbacks with zero custom kernels, and each kernel you add replaces one fallback.** See
+A from-scratch LLM inference engine, built kernel-up and **architecture-portable**. Python
+orchestrates; CUDA C++ custom ops do the work. Two design rules: **the engine runs on torch
+fallbacks with zero custom kernels, and each kernel you add replaces one fallback**; and
+**kernels are capability-gated** — each declares the compute capability it needs and
+[`moonshot/device.py`](moonshot/device.py) falls back on devices below it, so nothing breaks
+on other GPUs. Developed primarily on an RTX 3090 (`sm_86`). See
 [`docs/overview.md`](docs/overview.md) and [`docs/architecture.md`](docs/architecture.md).
 
 ## Read order for a fresh agent
@@ -60,17 +63,21 @@ Never delete or mutate a prior ladder rung in place — each optimization step i
 
 ## Build & bench
 
-Target is CUDA on `sm_86`. **CUDA does not build on macOS** — edit and reason statically on
-a dev Mac; compile and run on the 3090.
+Architecture is auto-detected (or set `TORCH_CUDA_ARCH_LIST` for a portable fatbin — see
+[`docs/hardware-and-measurement.md`](docs/hardware-and-measurement.md)); never hard-code a
+single `sm_XX`. Guard arch-specific features with `#if __CUDA_ARCH__ >= 800`. **CUDA does not
+build on macOS** — edit and reason statically on a dev Mac; compile and run on a CUDA box.
 
 ```bash
-pip install -e .                 # builds csrc custom ops via torch cpp_extension (on the 3090)
+pip install -e .                 # builds csrc custom ops via torch cpp_extension
+TORCH_CUDA_ARCH_LIST="7.5 8.0 8.6 8.9 9.0" pip install -e .   # portable Turing…Hopper build
 python -m moonshot.engine ...    # run the engine (torch fallbacks until kernels land)
-scripts/inspect.sh csrc/ops/<name>/<file>.cu   # ptxas -v (reg/smem/spill) + SASS
+scripts/inspect.sh csrc/ops/<name>/<file>.cu   # ptxas -v (reg/smem/spill) + SASS; arch auto-detected
 ```
 
-`ncu` is blocked on the target box (`ERR_NVGPUCTRPERM`). Use CUDA events, `ptxas -v`,
-`cuobjdump -sass`, and `nsys`. Do not add workflows that assume `ncu`.
+`ncu` is blocked on the current dev container (`ERR_NVGPUCTRPERM`) — a container limitation,
+not a GPU one. Use CUDA events, `ptxas -v`, `cuobjdump -sass`, and `nsys`. Do not add
+workflows that assume `ncu`.
 
 ## Conventions
 

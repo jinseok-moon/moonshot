@@ -6,7 +6,15 @@
 //   3. TORCH_LIBRARY registration so it becomes torch.ops.moonshot.template_affine,
 //      which moonshot/ops.py can dispatch to.
 //
-// Build via torch cpp_extension (pip install -e .) on the target box (sm_86).
+// Build via torch cpp_extension (pip install -e .); architecture is auto-detected or set
+// with TORCH_CUDA_ARCH_LIST. This template is plain fp32 and runs on any arch. For a kernel
+// that uses arch-specific features, guard them so one source compiles across the arch list:
+//     #if __CUDA_ARCH__ >= 800      // bf16 tensor cores + cp.async (Ampere+)
+//       ... fast path ...
+//     #else
+//       ... portable path (or leave the runtime capability gate to pick the fallback) ...
+//     #endif
+// and pass the matching min_capability in moonshot/ops.py.
 
 #include <torch/extension.h>
 

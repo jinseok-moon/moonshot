@@ -1,6 +1,6 @@
 # moonshot
 
-**A from-scratch LLM inference engine for Ampere, built kernel-up — in the open, as an AI-agentic project.**
+**A from-scratch LLM inference engine, built kernel-up — architecture-portable, in the open, as an AI-agentic project.**
 
 `moonshot` is an inference engine designed around one idea: **the engine runs before any
 custom kernel exists, and every kernel you write transparently replaces a fallback.**
@@ -74,10 +74,14 @@ fallbacks first, then earn its speed one custom kernel at a time.
 > Prior fundamentals work (fp32 + bf16 GEMM ladders, bench harness) lives in the git tag
 > `archive/fundamentals-v0`; this repo is the clean rebuild around a pluggable engine.
 
-## Hardware
+## Hardware support
 
-RTX 3090 (Ampere, `sm_86`, 24 GB) — bf16/int8 tensor cores, `cp.async`. No fp8, no Hopper
-`wgmma`/TMA. CUDA 13.0. See [`docs/hardware-and-measurement.md`](docs/hardware-and-measurement.md).
+Portable by construction: the engine runs on any backend torch supports (CUDA incl. ROCm, or
+CPU) via fallbacks, and hand-written kernels are **capability-gated** — each declares the
+compute capability it needs and falls back on devices below it, so a kernel built for Ampere
+doesn't break on Turing, it just doesn't engage. Developed and profiled primarily on an
+**RTX 3090** (Ampere, `sm_86`); Turing → Hopper covered by the build. Support matrix and the
+no-`ncu` measurement methodology: [`docs/hardware-and-measurement.md`](docs/hardware-and-measurement.md).
 
 ## Where to start reading
 
