@@ -71,6 +71,32 @@ and attention.
 Ladder discipline: an optimization step is a **new** `kernel_N` file, never an in-place edit
 of a prior rung. The ladder of rungs is the story a reader (and an interviewer) follows.
 
+## Kernel authoring — portable structure, specialized atoms, tuned by config
+
+Kernels are not hand-tuned per arch. Every kernel splits into two layers, treated
+differently (full rationale in [ADR 0003](decisions/0003-kernel-design-portable-structure.md)):
+
+- **Dataflow layer — arch-independent, written once.** Tiling, the shared-memory plan,
+  double-buffered pipelining, online-softmax recurrence. ~80% of the performance and 100% of
+  the transferable *why-fast*. This is where the depth goes.
+- **Atom layer — arch-specific, isolated.** The MMA/copy primitive and SM-tuned tile shapes.
+  Only this diverges by arch.
+
+Rules:
+
+1. **Write the dataflow generally** — one structure, not a per-arch fork.
+2. **Template tile parameters** (BM, BN, BK, warp tiles, stages) and **autotune per arch**.
+   The per-arch difference is *config*, not *code*.
+3. **Abstract the MMA/copy atom** behind a thin interface; guard arch-specific instructions
+   with `#if __CUDA_ARCH__ >= 800`. Ampere-family (sm_80/86/89) is one `mma.sync` path; a
+   Hopper `wgmma`/TMA atom is a documented seam, added only if Hopper becomes a target.
+4. **General ≠ slow-portable.** Still use tensor cores, shared memory, `cp.async` — parameterize
+   them, don't drop them. A kernel that abandons tensor cores to be portable is a toy.
+5. Pass the kernel's `min_capability` in `moonshot/ops.py`; the runtime gate picks kernel vs
+   fallback ([hardware-and-measurement](hardware-and-measurement.md#portability-model)).
+
+**Principle:** *Portable structure, specialized atoms, tuned by config.*
+
 ## Progression toward a fused decode path
 
 Ops start individually dispatched (easy to bench and swap). Once the important kernels
