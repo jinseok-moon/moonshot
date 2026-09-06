@@ -1,5 +1,8 @@
 # moonshot
 
+현재 진행: [CUDA → AMD 1주일 실습](docs/amd-week.md).
+GPU·ROCm 환경 선정부터 시작하며, HIP 예제는 [csrc/studies/amd](csrc/studies/amd/README.md)에 있다.
+
 **A from-scratch LLM inference engine, built kernel-up — architecture-portable, in the open, as an AI-agentic project.**
 
 `moonshot` is an inference engine designed around one idea: **the engine runs before any

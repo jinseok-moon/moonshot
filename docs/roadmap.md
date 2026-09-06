@@ -17,6 +17,11 @@ The engine ([architecture](architecture.md)) is not a phase — it is the **spin
 kernel plugs into. It comes up early on torch fallbacks; later phases harden its decode path
 one custom op at a time.
 
+## Immediate study — CUDA to AMD
+
+Start with the [one-week AMD track](amd-week.md): GPU/ROCm selection, then standalone
+HIP exercises under `csrc/studies/amd/`. The engine roadmap below remains the long-term plan.
+
 ## Phase 1 — bf16 tensor-core GEMM ladder + profiling discipline
 
 Re-climb the GEMM optimization ladder for tensor cores. The point of interest vs an fp32

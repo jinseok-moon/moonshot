@@ -22,6 +22,8 @@ paths.
   no-`ncu` profiling methodology, and the % -of-reference reporting discipline.
 
 ## Practice
+- [amd-week](amd-week.md): CUDA 경험자를 위한 1주일 HIP/MFMA/CK/hipBLASLt 실습;
+  GPU·ROCm 환경 확인 후 작은 실험 단위로 진행.
 - [ai-collaboration](ai-collaboration.md): the delegate-vs-own doctrine — what agents drive,
   what a human must own and defend at a whiteboard, and the definition of done.
 
